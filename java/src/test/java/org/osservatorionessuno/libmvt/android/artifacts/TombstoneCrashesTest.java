@@ -1,5 +1,6 @@
 package org.osservatorionessuno.libmvt.android.artifacts;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Files;
@@ -43,5 +44,11 @@ public class TombstoneCrashesTest {
         assertEquals("/vendor/bin/hw/android.hardware.media.c2@1.2-mediatek",
                 ((java.util.List<?>) rec.get("command_line")).get(0));
         assertEquals("2023-04-12 12:32:40.518290", rec.get("timestamp"));
+    }
+
+    @Test
+    @Disabled("Not implemented yet")
+    public void testParseKernel() throws Exception {
+        // Skipped: kernel tombstone parsing is not yet implemented
     }
 }

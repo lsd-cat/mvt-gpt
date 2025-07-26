@@ -12,17 +12,22 @@ public abstract class AndroidArtifact extends Artifact {
      * Extract a section from a dumpsys string by a separator, stopping at a line starting with '---'.
      */
     protected static String extractDumpsysSection(String dumpsys, String separator) {
-        StringBuilder sb = new StringBuilder();
+        java.util.List<String> lines = new java.util.ArrayList<>();
         boolean inSection = false;
-        for (String line : dumpsys.split("\n")) {
+        final String delimiter = "-".repeat(78);
+        for (String line : dumpsys.split("\\R")) {
             if (line.trim().equals(separator)) {
                 inSection = true;
                 continue;
             }
-            if (!inSection) continue;
-            if (line.trim().startsWith("---")) break;
-            sb.append(line).append('\n');
+            if (!inSection) {
+                continue;
+            }
+            if (line.trim().startsWith(delimiter)) {
+                break;
+            }
+            lines.add(line);
         }
-        return sb.toString();
+        return String.join("\n", lines);
     }
 }
