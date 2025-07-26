@@ -1,0 +1,57 @@
+name: Java CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  desktop:
+    name: Desktop JDK ${{ matrix.java-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        java-version: [ '21', '24' ]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK ${{ matrix.java-version }}
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: ${{ matrix.java-version }}
+          cache: 'gradle'
+      - name: Generate Gradle wrapper
+        working-directory: java
+        run: gradle wrapper
+      - name: Build and test
+        working-directory: java
+        run: ./gradlew test
+
+  android:
+    name: Android API 30 JDK ${{ matrix.java-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        java-version: [ '11', '17' ]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK ${{ matrix.java-version }}
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: ${{ matrix.java-version }}
+          cache: 'gradle'
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          packages: "platforms;android-30 build-tools;33.0.0"
+      - name: Generate Gradle wrapper
+        working-directory: java
+        run: gradle wrapper
+      - name: Build and test
+        working-directory: java
+        run: ./gradlew test
