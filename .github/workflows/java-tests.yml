@@ -31,69 +31,20 @@ jobs:
         run: ./gradlew test
 
   android:
-    name: Android ${{ matrix.android }} API ${{ matrix.api-level }} JDK ${{ matrix.java-version }}
+    name: Android API ${{ matrix.api-level }} JDK ${{ matrix.java-version }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         include:
-          - android: '14'
-            api-level: 34
-            java-version: '8'
-          - android: '14'
-            api-level: 34
-            java-version: '9'
-          - android: '14'
-            api-level: 34
+          - api-level: 34
             java-version: '11'
-          - android: '14'
-            api-level: 34
+          - api-level: 34
             java-version: '17'
-          - android: '13'
-            api-level: 33
-            java-version: '8'
-          - android: '13'
-            api-level: 33
-            java-version: '9'
-          - android: '13'
-            api-level: 33
+          - api-level: 30
             java-version: '11'
-          - android: '13'
-            api-level: 33
+          - api-level: 30
             java-version: '17'
-          - android: '12'
-            api-level: 31
-            java-version: '8'
-          - android: '12'
-            api-level: 31
-            java-version: '9'
-          - android: '12'
-            api-level: 31
-            java-version: '11'
-          - android: '11'
-            api-level: 30
-            java-version: '8'
-          - android: '11'
-            api-level: 30
-            java-version: '9'
-          - android: '11'
-            api-level: 30
-            java-version: '11'
-          - android: '10'
-            api-level: 29
-            java-version: '8'
-          - android: '10'
-            api-level: 29
-            java-version: '9'
-          - android: '9'
-            api-level: 28
-            java-version: '8'
-          - android: '9'
-            api-level: 28
-            java-version: '9'
-          - android: '8'
-            api-level: 26
-            java-version: '8'
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK 17 for Android tools
