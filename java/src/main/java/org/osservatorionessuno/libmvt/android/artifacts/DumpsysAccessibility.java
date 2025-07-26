@@ -1,6 +1,6 @@
-package re.mvt.android.artifacts;
+package org.osservatorionessuno.libmvt.android.artifacts;
 
-import re.mvt.common.Artifact;
+import org.osservatorionessuno.libmvt.common.IndicatorType;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -26,9 +26,10 @@ public class DumpsysAccessibility extends AndroidArtifact {
                     if (m.find()) {
                         String fullService = m.group(2).trim();
                         String packageName = fullService.split("/")[0];
+                        String service = fullService;
                         Map<String, String> result = new HashMap<>();
                         result.put("package_name", packageName);
-                        result.put("service", fullService);
+                        result.put("service", service);
                         results.add(result);
                     } else if (lines.get(j).trim().startsWith("}")) {
                         break;
@@ -40,10 +41,12 @@ public class DumpsysAccessibility extends AndroidArtifact {
                     Matcher m = v14Pattern.matcher(lines.get(j));
                     if (m.find()) {
                         String fullService = m.group(1).trim();
-                        String packageName = fullService.split("/")[0];
+                        String[] parts = fullService.split("/");
+                        String packageName = parts[0];
+                        String service = parts.length > 1 ? parts[1] : "";
                         Map<String, String> result = new HashMap<>();
                         result.put("package_name", packageName);
-                        result.put("service", fullService);
+                        result.put("service", service.isEmpty() ? fullService : service);
                         results.add(result);
                         break;
                     }
@@ -59,7 +62,7 @@ public class DumpsysAccessibility extends AndroidArtifact {
             @SuppressWarnings("unchecked")
             Map<String, String> record = (Map<String, String>) obj;
             String context = record.get("service");
-            detected.addAll(indicators.matchString(context, re.mvt.common.IndicatorType.PROCESS));
+            detected.addAll(indicators.matchString(context, IndicatorType.PROCESS));
         }
     }
 }
