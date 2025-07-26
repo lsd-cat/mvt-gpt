@@ -38,13 +38,13 @@ jobs:
       matrix:
         include:
           - api-level: 34
-            java-version: '11'
-          - api-level: 34
             java-version: '17'
+          - api-level: 33
+            java-version: '11'
+          - api-level: 32
+            java-version: '11'
           - api-level: 30
             java-version: '11'
-          - api-level: 30
-            java-version: '17'
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK 17 for Android tools
