@@ -39,16 +39,21 @@ jobs:
         java-version: [ '11', '17' ]
     steps:
       - uses: actions/checkout@v4
-      - name: Set up JDK ${{ matrix.java-version }}
+      - name: Set up JDK 17 for Android tools
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          packages: "platforms;android-30 build-tools;33.0.0"
+      - name: Set up JDK ${{ matrix.java-version }} for Gradle
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: ${{ matrix.java-version }}
           cache: 'gradle'
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
-        with:
-          packages: "platforms;android-30 build-tools;33.0.0"
       - name: Generate Gradle wrapper
         working-directory: java
         run: gradle wrapper
