@@ -1,6 +1,8 @@
 package org.osservatorionessuno.libmvt.android.artifacts;
 
 import org.osservatorionessuno.libmvt.common.IndicatorType;
+import com.android.server.os.TombstoneProtos;
+import com.google.protobuf.InvalidProtocolBufferException;
 
 import java.util.*;
 
@@ -45,6 +47,37 @@ public class TombstoneCrashes extends AndroidArtifact {
                     try { rec.put("tid", Integer.parseInt(tid)); } catch (NumberFormatException ignored) {}
                 }
             }
+        }
+        if (!rec.isEmpty()) results.add(rec);
+    }
+
+    /** Parse Android tombstone protobuf data. */
+    public void parseProtobuf(byte[] data) {
+        results.clear();
+        if (data == null) return;
+        Map<String, Object> rec = new HashMap<>();
+        try {
+            TombstoneProtos.Tombstone pb = TombstoneProtos.Tombstone.parseFrom(data);
+            String ts = pb.getTimestamp();
+            ts = ts.replaceFirst("[+-][0-9]{4}$", "");
+            if (ts.contains(".")) {
+                int dot = ts.indexOf('.');
+                String frac = ts.substring(dot + 1);
+                if (frac.length() > 6) frac = frac.substring(0, 6);
+                ts = ts.substring(0, dot) + "." + frac;
+            }
+            rec.put("timestamp", ts);
+            if (!pb.getCommandLineList().isEmpty()) {
+                rec.put("command_line", new ArrayList<>(pb.getCommandLineList()));
+            }
+            rec.put("pid", pb.getPid());
+            rec.put("tid", pb.getTid());
+            rec.put("uid", pb.getUid());
+            if (pb.getThreadsMap().containsKey(pb.getTid())) {
+                String name = pb.getThreadsMap().get(pb.getTid()).getName();
+                if (!name.isEmpty()) rec.put("process_name", name);
+            }
+        } catch (InvalidProtocolBufferException ignored) {
         }
         if (!rec.isEmpty()) results.add(rec);
     }
