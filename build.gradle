@@ -1,6 +1,7 @@
 plugins {
     id 'java-library'
     id 'com.google.protobuf' version '0.9.4'
+    id 'maven-publish'
 }
 
 group = 'org.osservatorionessuno'
@@ -44,4 +45,12 @@ protobuf {
 
 test {
     useJUnitPlatform()
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from components.java
+        }
+    }
 }
