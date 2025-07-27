@@ -61,7 +61,7 @@ public class DumpsysDBInfo extends AndroidArtifact {
             Map<String, String> map = (Map<String, String>) obj;
             String path = map.getOrDefault("path", "");
             for (String part : path.split("/")) {
-                detected.addAll(indicators.matchString(part, IndicatorType.PROCESS));
+                detected.addAll(indicators.matchString(part, IndicatorType.APP_ID));
             }
         }
     }
