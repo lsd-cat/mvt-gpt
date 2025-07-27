@@ -37,4 +37,16 @@ public class ProcessesTest {
         p.checkIndicators();
         assertTrue(p.getDetected().size() > 0);
     }
+
+    @Test
+    public void testTruncatedProcessMatch() throws Exception {
+        Processes p = new Processes();
+        String data = "USER PID PPID VSZ RSS WCHAN ADDR S NAME\n" +
+                "root 50 2 0 0 0 0 S com.bad.actor.ma\n";
+        p.parse(data);
+        Indicators indicators = Indicators.loadFromDirectory(Path.of("src", "test", "resources", "iocs").toFile());
+        p.setIndicators(indicators);
+        p.checkIndicators();
+        assertFalse(p.getDetected().isEmpty());
+    }
 }
