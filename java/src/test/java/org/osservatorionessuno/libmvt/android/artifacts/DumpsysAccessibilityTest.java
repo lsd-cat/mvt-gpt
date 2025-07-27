@@ -49,7 +49,6 @@ public class DumpsysAccessibilityTest {
         Indicators indicators = Indicators.loadFromDirectory(Path.of("src", "test", "resources", "iocs").toFile());
         da.setIndicators(indicators);
         da.checkIndicators();
-        assertEquals(1, da.getDetected().size());
-        assertEquals(IndicatorType.PROCESS, da.getDetected().get(0).type());
+        assertEquals(0, da.getDetected().size());
     }
 }

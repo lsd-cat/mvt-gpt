@@ -61,8 +61,8 @@ public class DumpsysAccessibility extends AndroidArtifact {
         for (Object obj : results) {
             @SuppressWarnings("unchecked")
             Map<String, String> record = (Map<String, String>) obj;
-            String context = record.get("service");
-            detected.addAll(indicators.matchString(context, IndicatorType.PROCESS));
+            String pkg = record.get("package_name");
+            detected.addAll(indicators.matchString(pkg, IndicatorType.APP_ID));
         }
     }
 }
