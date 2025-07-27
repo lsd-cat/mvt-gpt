@@ -34,7 +34,7 @@ public class DumpsysPlatformCompat extends AndroidArtifact {
             @SuppressWarnings("unchecked")
             Map<String, String> map = (Map<String, String>) obj;
             String pkg = map.get("package_name");
-            detected.addAll(indicators.matchString(pkg, IndicatorType.PROCESS));
+            detected.addAll(indicators.matchString(pkg, IndicatorType.APP_ID));
         }
     }
 }

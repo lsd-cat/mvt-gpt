@@ -30,6 +30,6 @@ public class DumpsysBatteryDailyTest {
         Indicators ind = Indicators.loadFromDirectory(Path.of("src", "test", "resources", "iocs").toFile());
         bd.setIndicators(ind);
         bd.checkIndicators();
-        assertEquals(0, bd.getDetected().size());
+        assertEquals(1, bd.getDetected().size());
     }
 }

@@ -61,8 +61,8 @@ public class Processes extends AndroidArtifact {
             Map<String, Object> map = (Map<String, Object>) obj;
             String name = (String) map.get("proc_name");
             if ("gatekeeperd".equals(name)) continue;
-            detected.addAll(indicators.matchString(name, IndicatorType.PROCESS));
             detected.addAll(indicators.matchString(name, IndicatorType.APP_ID));
+            detected.addAll(indicators.matchString(name, IndicatorType.PROCESS));
         }
     }
 }

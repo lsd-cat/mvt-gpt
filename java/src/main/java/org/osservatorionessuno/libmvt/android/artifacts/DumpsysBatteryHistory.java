@@ -80,7 +80,7 @@ public class DumpsysBatteryHistory extends AndroidArtifact {
         for (Object obj : results) {
             @SuppressWarnings("unchecked")
             Map<String, String> rec = (Map<String, String>) obj;
-            detected.addAll(indicators.matchString(rec.get("package_name"), IndicatorType.PROCESS));
+            detected.addAll(indicators.matchString(rec.get("package_name"), IndicatorType.APP_ID));
         }
     }
 }
