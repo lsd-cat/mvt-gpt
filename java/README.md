@@ -14,6 +14,22 @@ gradle wrapper
 ./gradlew test
 ```
 
+## AndroidQF API
+The `AndroidQFRunner` class can parse a directory exported with the
+[androidqf](https://mvt.re/) format and run all available modules.
+Example:
+```java
+Path dir = Path.of("/path/to/androidqf");
+Indicators iocs = Indicators.loadFromDirectory(Path.of("/path/to/iocs").toFile());
+AndroidQFRunner runner = new AndroidQFRunner(dir);
+runner.setIndicators(iocs);
+Map<String, Artifact> result = runner.runAll();
+```
+
+Individual modules can be invoked via `runModule("processes")` etc.
+See `AndroidQFRunner.AVAILABLE_MODULES` for the list of names.
+
+
 ## Next steps
 - Translate more artifact parsers from Python.
 - Extend Detection metadata (source file, STIX IDs, etc.).
