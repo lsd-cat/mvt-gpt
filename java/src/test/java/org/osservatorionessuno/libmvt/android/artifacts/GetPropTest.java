@@ -36,7 +36,6 @@ public class GetPropTest {
         Indicators indicators = Indicators.loadFromDirectory(Path.of("src", "test", "resources", "iocs").toFile());
         gp.setIndicators(indicators);
         gp.checkIndicators();
-        // For this test dataset there should be zero detections
-        assertEquals(0, gp.getDetected().size());
+        assertTrue(gp.getDetected().size() > 0);
     }
 }

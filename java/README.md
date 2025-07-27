@@ -30,6 +30,7 @@ Python implementation.
 |----------|:------:|:---------:|
 | Accessibility | ✅ | ✅ |
 | ADB | ✅ | ❌ (no IOC logic) |
+| Android backup | ✅ | ✅ |
 | Appops | ✅ | ⚠ partial |
 | Battery daily | ✅ | ✅ |
 | Battery history | ✅ | ✅ |

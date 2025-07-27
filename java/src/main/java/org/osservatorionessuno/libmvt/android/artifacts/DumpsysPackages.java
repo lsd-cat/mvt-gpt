@@ -1,6 +1,7 @@
 package org.osservatorionessuno.libmvt.android.artifacts;
 
 import org.osservatorionessuno.libmvt.common.IndicatorType;
+import org.osservatorionessuno.libmvt.common.Detection;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -10,6 +11,14 @@ import java.util.regex.Pattern;
  * Parser for dumpsys package information.
  */
 public class DumpsysPackages extends AndroidArtifact {
+    private static final Set<String> ROOT_PACKAGES = Set.of(
+            "com.noshufou.android.su",
+            "com.noshufou.android.su.elite",
+            "eu.chainfire.supersu",
+            "com.koushikdutta.superuser",
+            "com.thirdparty.superuser",
+            "com.yellowes.su"
+    );
 
     private static class PackageDetails {
         String packageName = "";
@@ -170,7 +179,10 @@ public class DumpsysPackages extends AndroidArtifact {
             @SuppressWarnings("unchecked")
             Map<String, Object> record = (Map<String, Object>) obj;
             String pkg = (String) record.get("package_name");
-            detected.addAll(indicators.matchString(pkg, IndicatorType.PROCESS));
+            if (ROOT_PACKAGES.contains(pkg)) {
+                detected.add(new Detection(IndicatorType.PROCESS, pkg, "root_package"));
+            }
+            detected.addAll(indicators.matchString(pkg, IndicatorType.APP_ID));
         }
     }
 }

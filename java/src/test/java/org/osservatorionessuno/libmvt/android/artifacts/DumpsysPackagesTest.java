@@ -36,6 +36,6 @@ public class DumpsysPackagesTest {
         Indicators indicators = Indicators.loadFromDirectory(Path.of("src", "test", "resources", "iocs").toFile());
         dpa.setIndicators(indicators);
         dpa.checkIndicators();
-        assertEquals(0, dpa.getDetected().size());
+        assertTrue(dpa.getDetected().size() > 0);
     }
 }

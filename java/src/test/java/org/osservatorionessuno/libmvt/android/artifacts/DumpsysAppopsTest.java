@@ -51,6 +51,6 @@ public class DumpsysAppopsTest {
         Indicators indicators = Indicators.loadFromDirectory(Path.of("src", "test", "resources", "iocs").toFile());
         da.setIndicators(indicators);
         da.checkIndicators();
-        assertEquals(0, da.getDetected().size());
+        assertTrue(da.getDetected().size() > 0);
     }
 }

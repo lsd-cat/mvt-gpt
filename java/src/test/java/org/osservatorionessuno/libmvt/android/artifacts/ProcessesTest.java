@@ -35,6 +35,6 @@ public class ProcessesTest {
         Indicators indicators = Indicators.loadFromDirectory(Path.of("src", "test", "resources", "iocs").toFile());
         p.setIndicators(indicators);
         p.checkIndicators();
-        assertEquals(0, p.getDetected().size());
+        assertTrue(p.getDetected().size() > 0);
     }
 }

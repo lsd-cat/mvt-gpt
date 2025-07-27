@@ -19,11 +19,15 @@ public class Indicators {
     private final Trie domainTrie;
     private final Trie urlTrie;
     private final Trie processTrie;
+    private final Trie appIdTrie;
+    private final Trie propertyTrie;
 
-    private Indicators(Trie domainTrie, Trie urlTrie, Trie processTrie) {
+    private Indicators(Trie domainTrie, Trie urlTrie, Trie processTrie, Trie appIdTrie, Trie propertyTrie) {
         this.domainTrie = domainTrie;
         this.urlTrie = urlTrie;
         this.processTrie = processTrie;
+        this.appIdTrie = appIdTrie;
+        this.propertyTrie = propertyTrie;
     }
 
     public static Indicators loadFromDirectory(File dir) throws IOException {
@@ -31,9 +35,11 @@ public class Indicators {
         Trie.TrieBuilder domains = Trie.builder().ignoreCase();
         Trie.TrieBuilder urls = Trie.builder().ignoreCase();
         Trie.TrieBuilder processes = Trie.builder().ignoreCase();
+        Trie.TrieBuilder appIds = Trie.builder().ignoreCase();
+        Trie.TrieBuilder properties = Trie.builder().ignoreCase();
 
         File[] files = dir.listFiles((d, name) -> name.endsWith(".json") || name.endsWith(".stix2"));
-        if (files == null) return new Indicators(domains.build(), urls.build(), processes.build());
+        if (files == null) return new Indicators(domains.build(), urls.build(), processes.build(), appIds.build(), properties.build());
 
         for (File f : files) {
             if (f.getName().endsWith(".stix2")) {
@@ -42,7 +48,7 @@ public class Indicators {
                     BundleObject bundle = StixParsers.parseBundle(json);
                     for (BundleableObject obj : bundle.getObjects()) {
                         if (obj instanceof IndicatorSdo ind) {
-                            addPattern(domains, urls, processes, ind.getPattern());
+                            addPattern(domains, urls, processes, appIds, properties, ind.getPattern());
                         }
                     }
                 } catch (Exception ex) {
@@ -52,7 +58,7 @@ public class Indicators {
                     if (objects != null && objects.isArray()) {
                         for (JsonNode node : objects) {
                             if ("indicator".equals(node.path("type").asText())) {
-                                addPattern(domains, urls, processes, node.path("pattern").asText());
+                                addPattern(domains, urls, processes, appIds, properties, node.path("pattern").asText());
                             }
                         }
                     }
@@ -66,14 +72,17 @@ public class Indicators {
                     addField(domains, coll, "ipv4-addr:value");
                     addField(urls, coll, "url:value");
                     addField(processes, coll, "process:name");
+                    addField(appIds, coll, "app:id");
+                    addField(properties, coll, "android-property:name");
                 }
             }
         }
-        return new Indicators(domains.build(), urls.build(), processes.build());
+        return new Indicators(domains.build(), urls.build(), processes.build(), appIds.build(), properties.build());
     }
 
     private static void addPattern(Trie.TrieBuilder domains, Trie.TrieBuilder urls,
-                                   Trie.TrieBuilder processes, String pattern) {
+                                   Trie.TrieBuilder processes, Trie.TrieBuilder appIds,
+                                   Trie.TrieBuilder properties, String pattern) {
         if (pattern == null) return;
         String p = pattern.trim();
         if (p.startsWith("[") && p.endsWith("]")) {
@@ -90,6 +99,8 @@ public class Indicators {
             case "domain-name:value", "ipv4-addr:value" -> domains.addKeyword(value.toLowerCase());
             case "url:value" -> urls.addKeyword(value.toLowerCase());
             case "process:name" -> processes.addKeyword(value.toLowerCase());
+            case "app:id" -> appIds.addKeyword(value.toLowerCase());
+            case "android-property:name" -> properties.addKeyword(value.toLowerCase());
             default -> {
             }
         }
@@ -118,6 +129,8 @@ public class Indicators {
             case DOMAIN -> domainTrie;
             case URL -> urlTrie;
             case PROCESS -> processTrie;
+            case APP_ID -> appIdTrie;
+            case PROPERTY -> propertyTrie;
         };
         List<Detection> detections = new ArrayList<>();
         for (Emit e : trie.parseText(s.toLowerCase())) {

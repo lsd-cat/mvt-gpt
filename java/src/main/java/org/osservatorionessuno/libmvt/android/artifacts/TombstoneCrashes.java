@@ -1,6 +1,7 @@
 package org.osservatorionessuno.libmvt.android.artifacts;
 
 import org.osservatorionessuno.libmvt.common.IndicatorType;
+import org.osservatorionessuno.libmvt.common.Detection;
 import com.android.server.os.TombstoneProtos;
 import com.google.protobuf.InvalidProtocolBufferException;
 
@@ -96,6 +97,12 @@ public class TombstoneCrashes extends AndroidArtifact {
                 int slash = cmd.lastIndexOf('/');
                 String name = slash >=0 ? cmd.substring(slash+1) : cmd;
                 detected.addAll(indicators.matchString(name, IndicatorType.PROCESS));
+            }
+            Object uidObj = map.get("uid");
+            if (uidObj instanceof Integer uid) {
+                if (uid == 0 || uid == 1000 || uid == 2000) {
+                    detected.add(new Detection(IndicatorType.PROCESS, "uid" + uid, proc != null ? proc : ""));
+                }
             }
         }
     }
