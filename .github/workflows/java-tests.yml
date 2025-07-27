@@ -24,10 +24,8 @@ jobs:
           java-version: ${{ matrix.java-version }}
           cache: 'gradle'
       - name: Generate Gradle wrapper
-        working-directory: java
         run: gradle wrapper
       - name: Build and test
-        working-directory: java
         run: ./gradlew test
 
   android:
@@ -63,8 +61,6 @@ jobs:
           java-version: ${{ matrix.java-version }}
           cache: 'gradle'
       - name: Generate Gradle wrapper
-        working-directory: java
         run: gradle wrapper
       - name: Build and test
-        working-directory: java
         run: ./gradlew test
