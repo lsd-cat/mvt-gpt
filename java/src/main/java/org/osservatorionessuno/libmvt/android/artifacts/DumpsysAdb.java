@@ -46,6 +46,7 @@ public class DumpsysAdb extends AndroidArtifact {
         return (Map<String, Object>) o;
     }
 
+    @SuppressWarnings("unchecked")
     private Map<String, Object> indentedDumpParser(String data) {
         Map<String, Object> root = new HashMap<>();
         Deque<Object> stack = new ArrayDeque<>();
