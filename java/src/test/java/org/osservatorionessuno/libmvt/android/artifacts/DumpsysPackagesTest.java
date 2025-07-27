@@ -38,4 +38,13 @@ public class DumpsysPackagesTest {
         dpa.checkIndicators();
         assertTrue(dpa.getDetected().size() > 0);
     }
+
+    @Test
+    public void testRootPackageDetection() {
+        DumpsysPackages dpa = new DumpsysPackages();
+        String sample = "Packages:\n  Package [com.topjohnwu.magisk] (test)\n    userId=0\n";
+        dpa.parse(sample);
+        dpa.checkIndicators();
+        assertFalse(dpa.getDetected().isEmpty());
+    }
 }

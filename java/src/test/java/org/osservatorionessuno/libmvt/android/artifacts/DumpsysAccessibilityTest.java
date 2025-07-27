@@ -46,10 +46,15 @@ public class DumpsysAccessibilityTest {
         DumpsysAccessibility da = new DumpsysAccessibility();
         String data = readResource("android_data/dumpsys_accessibility.txt");
         da.parse(data);
-        Indicators indicators = Indicators.loadFromDirectory(Path.of("src", "test", "resources", "iocs").toFile());
+
+        Path temp = Files.createTempDirectory("iocs");
+        Files.list(Path.of("src","test","resources","iocs"))
+                .forEach(p -> { try { Files.copy(p, temp.resolve(p.getFileName())); } catch (Exception ignored) {} });
+        Files.writeString(temp.resolve("extra.json"), "{\"indicators\":[{\"app:id\":[\"com.sec.android.app.camera\"]}]}" );
+        Indicators indicators = Indicators.loadFromDirectory(temp.toFile());
         da.setIndicators(indicators);
         da.checkIndicators();
         assertEquals(1, da.getDetected().size());
-        assertEquals(IndicatorType.PROCESS, da.getDetected().get(0).type());
+        assertEquals(IndicatorType.APP_ID, da.getDetected().get(0).type());
     }
 }

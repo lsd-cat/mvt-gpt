@@ -21,13 +21,20 @@ public class Indicators {
     private final Trie processTrie;
     private final Trie appIdTrie;
     private final Trie propertyTrie;
+    private final List<String> processList;
+    private final List<String> appIdList;
+    private final List<String> propertyList;
 
-    private Indicators(Trie domainTrie, Trie urlTrie, Trie processTrie, Trie appIdTrie, Trie propertyTrie) {
+    private Indicators(Trie domainTrie, Trie urlTrie, Trie processTrie, Trie appIdTrie, Trie propertyTrie,
+                       List<String> processList, List<String> appIdList, List<String> propertyList) {
         this.domainTrie = domainTrie;
         this.urlTrie = urlTrie;
         this.processTrie = processTrie;
         this.appIdTrie = appIdTrie;
         this.propertyTrie = propertyTrie;
+        this.processList = processList;
+        this.appIdList = appIdList;
+        this.propertyList = propertyList;
     }
 
     public static Indicators loadFromDirectory(File dir) throws IOException {
@@ -37,9 +44,12 @@ public class Indicators {
         Trie.TrieBuilder processes = Trie.builder().ignoreCase();
         Trie.TrieBuilder appIds = Trie.builder().ignoreCase();
         Trie.TrieBuilder properties = Trie.builder().ignoreCase();
+        List<String> procList = new ArrayList<>();
+        List<String> appIdList = new ArrayList<>();
+        List<String> propList = new ArrayList<>();
 
         File[] files = dir.listFiles((d, name) -> name.endsWith(".json") || name.endsWith(".stix2"));
-        if (files == null) return new Indicators(domains.build(), urls.build(), processes.build(), appIds.build(), properties.build());
+        if (files == null) return new Indicators(domains.build(), urls.build(), processes.build(), appIds.build(), properties.build(), procList, appIdList, propList);
 
         for (File f : files) {
             if (f.getName().endsWith(".stix2")) {
@@ -48,7 +58,8 @@ public class Indicators {
                     BundleObject bundle = StixParsers.parseBundle(json);
                     for (BundleableObject obj : bundle.getObjects()) {
                         if (obj instanceof IndicatorSdo ind) {
-                            addPattern(domains, urls, processes, appIds, properties, ind.getPattern());
+                            addPattern(domains, urls, processes, appIds, properties,
+                                       procList, appIdList, propList, ind.getPattern());
                         }
                     }
                 } catch (Exception ex) {
@@ -58,7 +69,9 @@ public class Indicators {
                     if (objects != null && objects.isArray()) {
                         for (JsonNode node : objects) {
                             if ("indicator".equals(node.path("type").asText())) {
-                                addPattern(domains, urls, processes, appIds, properties, node.path("pattern").asText());
+                                addPattern(domains, urls, processes, appIds, properties,
+                                           procList, appIdList, propList,
+                                           node.path("pattern").asText());
                             }
                         }
                     }
@@ -68,21 +81,24 @@ public class Indicators {
                 JsonNode arr = root.get("indicators");
                 if (arr == null) continue;
                 for (JsonNode coll : arr) {
-                    addField(domains, coll, "domain-name:value");
-                    addField(domains, coll, "ipv4-addr:value");
-                    addField(urls, coll, "url:value");
-                    addField(processes, coll, "process:name");
-                    addField(appIds, coll, "app:id");
-                    addField(properties, coll, "android-property:name");
+                    addField(domains, coll, "domain-name:value", null);
+                    addField(domains, coll, "ipv4-addr:value", null);
+                    addField(urls, coll, "url:value", null);
+                    addField(processes, coll, "process:name", procList);
+                    addField(appIds, coll, "app:id", appIdList);
+                    addField(properties, coll, "android-property:name", propList);
                 }
             }
         }
-        return new Indicators(domains.build(), urls.build(), processes.build(), appIds.build(), properties.build());
+        return new Indicators(domains.build(), urls.build(), processes.build(), appIds.build(), properties.build(),
+                procList, appIdList, propList);
     }
 
     private static void addPattern(Trie.TrieBuilder domains, Trie.TrieBuilder urls,
                                    Trie.TrieBuilder processes, Trie.TrieBuilder appIds,
-                                   Trie.TrieBuilder properties, String pattern) {
+                                   Trie.TrieBuilder properties,
+                                   List<String> procList, List<String> appIdList, List<String> propList,
+                                   String pattern) {
         if (pattern == null) return;
         String p = pattern.trim();
         if (p.startsWith("[") && p.endsWith("]")) {
@@ -98,15 +114,15 @@ public class Indicators {
         switch (key) {
             case "domain-name:value", "ipv4-addr:value" -> domains.addKeyword(value.toLowerCase());
             case "url:value" -> urls.addKeyword(value.toLowerCase());
-            case "process:name" -> processes.addKeyword(value.toLowerCase());
-            case "app:id" -> appIds.addKeyword(value.toLowerCase());
-            case "android-property:name" -> properties.addKeyword(value.toLowerCase());
+            case "process:name" -> { processes.addKeyword(value.toLowerCase()); procList.add(value.toLowerCase()); }
+            case "app:id" -> { appIds.addKeyword(value.toLowerCase()); appIdList.add(value.toLowerCase()); }
+            case "android-property:name" -> { properties.addKeyword(value.toLowerCase()); propList.add(value.toLowerCase()); }
             default -> {
             }
         }
     }
 
-    private static void addField(Trie.TrieBuilder builder, JsonNode coll, String key) {
+    private static void addField(Trie.TrieBuilder builder, JsonNode coll, String key, List<String> store) {
         if (coll == null) return;
         JsonNode node = coll.get(key);
         if (node == null || node.isNull()) return;
@@ -114,6 +130,7 @@ public class Indicators {
             String s = value.asText();
             if (s != null && !s.isBlank()) {
                 builder.addKeyword(s.toLowerCase());
+                if (store != null) store.add(s.toLowerCase());
             }
         }
     }
@@ -125,16 +142,40 @@ public class Indicators {
 
     public List<Detection> matchString(String s, IndicatorType type) {
         if (s == null) return List.of();
-        Trie trie = switch (type) {
-            case DOMAIN -> domainTrie;
-            case URL -> urlTrie;
-            case PROCESS -> processTrie;
-            case APP_ID -> appIdTrie;
-            case PROPERTY -> propertyTrie;
-        };
+        String lower = s.toLowerCase();
         List<Detection> detections = new ArrayList<>();
-        for (Emit e : trie.parseText(s.toLowerCase())) {
-            detections.add(new Detection(type, e.getKeyword(), s));
+        switch (type) {
+            case DOMAIN -> {
+                for (Emit e : domainTrie.parseText(lower)) {
+                    detections.add(new Detection(type, e.getKeyword(), s));
+                }
+            }
+            case URL -> {
+                for (Emit e : urlTrie.parseText(lower)) {
+                    detections.add(new Detection(type, e.getKeyword(), s));
+                }
+            }
+            case PROCESS -> {
+                for (String kw : processList) {
+                    if (kw.equals(lower) || (lower.length() == 16 && kw.startsWith(lower))) {
+                        detections.add(new Detection(type, kw, s));
+                    }
+                }
+            }
+            case APP_ID -> {
+                for (String kw : appIdList) {
+                    if (kw.equals(lower)) {
+                        detections.add(new Detection(type, kw, s));
+                    }
+                }
+            }
+            case PROPERTY -> {
+                for (String kw : propertyList) {
+                    if (kw.equals(lower)) {
+                        detections.add(new Detection(type, kw, s));
+                    }
+                }
+            }
         }
         return detections;
     }
