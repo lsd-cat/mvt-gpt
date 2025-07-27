@@ -18,3 +18,31 @@ gradle wrapper
 - Translate more artifact parsers from Python.
 - Extend Detection metadata (source file, STIX IDs, etc.).
 - Optionally publish to Maven Central / local repo.
+
+## Android feature parity
+
+Below is a quick overview of the Android artifact support compared to the Python
+version. "Parser" indicates whether a class exists to parse the artifact. The
+"Detection" column reflects if the heuristic/IOC logic is on par with the
+Python implementation.
+
+| Artifact | Parser | Detection |
+|----------|:------:|:---------:|
+| Accessibility | ✅ | ✅ |
+| ADB | ✅ | ❌ (no IOC logic) |
+| Appops | ✅ | ⚠ partial |
+| Battery daily | ✅ | ✅ |
+| Battery history | ✅ | ✅ |
+| DB info | ✅ | ✅ |
+| Package activities | ✅ | ✅ |
+| Packages | ✅ | ⚠ partial |
+| Platform compat | ✅ | ✅ |
+| Receivers | ✅ | ✅ |
+| File timestamps | N/A | N/A |
+| Getprop | ✅ | ⚠ partial |
+| Processes | ✅ | ⚠ partial |
+| Settings | ✅ | ✅ |
+| Tombstone crashes | ✅ | ⚠ partial |
+
+Legend: ✅ implemented, ❌ missing, ⚠ simplified compared to Python.
+
