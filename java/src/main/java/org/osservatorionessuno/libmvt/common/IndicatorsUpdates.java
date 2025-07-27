@@ -51,6 +51,11 @@ public class IndicatorsUpdates {
         }
     }
 
+    /** Return the directory where IOCs are stored locally. */
+    public Path getIndicatorsFolder() {
+        return indicatorsFolder;
+    }
+
     private Map<String, Object> getRemoteIndex() throws IOException, InterruptedException {
         String url = indexUrl != null ? indexUrl : String.format(githubRawUrl, "mvt-project", "mvt-indicators", "main", "indicators.yaml");
         if (url.startsWith("file://")) {

@@ -94,6 +94,23 @@ public class Indicators {
                 procList, appIdList, propList);
     }
 
+    /**
+     * Load indicators stored in the default MVT data directory.
+     */
+    public static Indicators loadDefault() throws IOException {
+        IndicatorsUpdates upd = new IndicatorsUpdates();
+        return loadFromDirectory(upd.getIndicatorsFolder().toFile());
+    }
+
+    /**
+     * Update the local indicators from the remote index and load them.
+     */
+    public static Indicators updateAndLoad() throws IOException, InterruptedException {
+        IndicatorsUpdates upd = new IndicatorsUpdates();
+        upd.update();
+        return loadFromDirectory(upd.getIndicatorsFolder().toFile());
+    }
+
     private static void addPattern(Trie.TrieBuilder domains, Trie.TrieBuilder urls,
                                    Trie.TrieBuilder processes, Trie.TrieBuilder appIds,
                                    Trie.TrieBuilder properties,

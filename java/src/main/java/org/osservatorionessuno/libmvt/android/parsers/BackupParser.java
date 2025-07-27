@@ -158,7 +158,7 @@ public final class BackupParser {
         List<Map<String, Object>> res = new ArrayList<>();
         try (TarArchiveInputStream tin = new TarArchiveInputStream(new ByteArrayInputStream(tarData))) {
             TarArchiveEntry entry;
-            while ((entry = tin.getNextTarEntry()) != null) {
+            while ((entry = tin.getNextEntry()) != null) {
                 String name = entry.getName();
                 if (name.startsWith("apps/com.android.providers.telephony/d_f/") &&
                         (name.endsWith("_sms_backup") || name.endsWith("_mms_backup"))) {

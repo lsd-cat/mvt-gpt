@@ -16,7 +16,7 @@ java {
 
 repositories {
     mavenCentral()
-    maven { url 'https://jitpack.io' }
+    maven { url = 'https://jitpack.io' }
 }
 
 dependencies {
@@ -24,6 +24,9 @@ dependencies {
     api 'org.ahocorasick:ahocorasick:0.6.3'
     implementation 'com.google.protobuf:protobuf-java:3.25.3'
     implementation 'com.github.StephenOTT:STIX-Java:0.10.0'
+    compileOnly 'org.immutables:value:2.7.3'
+    compileOnly 'org.immutables:annotate:2.7.3'
+    compileOnly 'org.immutables:serial:2.7.3'
     implementation 'org.yaml:snakeyaml:2.2'
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.17.+'
     implementation 'org.apache.commons:commons-compress:1.26.1'
@@ -40,4 +43,8 @@ protobuf {
 
 test {
     useJUnitPlatform()
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.compilerArgs += ['-Xlint:deprecation', '-Xlint:unchecked']
 }
