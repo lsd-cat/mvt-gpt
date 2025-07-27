@@ -17,7 +17,26 @@ public class DumpsysPackages extends AndroidArtifact {
             "eu.chainfire.supersu",
             "com.koushikdutta.superuser",
             "com.thirdparty.superuser",
-            "com.yellowes.su"
+            "com.yellowes.su",
+            "com.koushikdutta.rommanager",
+            "com.koushikdutta.rommanager.license",
+            "com.dimonvideo.luckypatcher",
+            "com.chelpus.lackypatch",
+            "com.ramdroid.appquarantine",
+            "com.ramdroid.appquarantinepro",
+            "com.devadvance.rootcloak",
+            "com.devadvance.rootcloakplus",
+            "de.robv.android.xposed.installer",
+            "com.saurik.substrate",
+            "com.zachspong.temprootremovejb",
+            "com.amphoras.hidemyroot",
+            "com.amphoras.hidemyrootadfree",
+            "com.formyhm.hiderootPremium",
+            "com.formyhm.hideroot",
+            "me.phh.superuser",
+            "eu.chainfire.supersu.pro",
+            "com.kingouser.com",
+            "com.topjohnwu.magisk"
     );
 
     private static class PackageDetails {
@@ -174,14 +193,15 @@ public class DumpsysPackages extends AndroidArtifact {
 
     @Override
     public void checkIndicators() {
-        if (indicators == null) return;
         for (Object obj : results) {
             @SuppressWarnings("unchecked")
             Map<String, Object> record = (Map<String, Object>) obj;
             String pkg = (String) record.get("package_name");
             if (ROOT_PACKAGES.contains(pkg)) {
                 detected.add(new Detection(IndicatorType.PROCESS, pkg, "root_package"));
+                continue;
             }
+            if (indicators == null) continue;
             detected.addAll(indicators.matchString(pkg, IndicatorType.APP_ID));
         }
     }
