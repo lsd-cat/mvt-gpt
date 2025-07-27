@@ -2,6 +2,10 @@ package org.osservatorionessuno.libmvt.common;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.digitalstate.stix.bundle.BundleObject;
+import io.digitalstate.stix.bundle.BundleableObject;
+import io.digitalstate.stix.json.StixParsers;
+import io.digitalstate.stix.sdo.objects.IndicatorSdo;
 import org.ahocorasick.trie.Emit;
 import org.ahocorasick.trie.Trie;
 
@@ -28,21 +32,67 @@ public class Indicators {
         Trie.TrieBuilder urls = Trie.builder().ignoreCase();
         Trie.TrieBuilder processes = Trie.builder().ignoreCase();
 
-        File[] files = dir.listFiles((d, name) -> name.endsWith(".json"));
+        File[] files = dir.listFiles((d, name) -> name.endsWith(".json") || name.endsWith(".stix2"));
         if (files == null) return new Indicators(domains.build(), urls.build(), processes.build());
 
         for (File f : files) {
-            JsonNode root = mapper.readTree(f);
-            JsonNode arr = root.get("indicators");
-            if (arr == null) continue;
-            for (JsonNode coll : arr) {
-                addField(domains, coll, "domain-name:value");
-                addField(domains, coll, "ipv4-addr:value");
-                addField(urls, coll, "url:value");
-                addField(processes, coll, "process:name");
+            if (f.getName().endsWith(".stix2")) {
+                String json = java.nio.file.Files.readString(f.toPath());
+                try {
+                    BundleObject bundle = StixParsers.parseBundle(json);
+                    for (BundleableObject obj : bundle.getObjects()) {
+                        if (obj instanceof IndicatorSdo ind) {
+                            addPattern(domains, urls, processes, ind.getPattern());
+                        }
+                    }
+                } catch (Exception ex) {
+                    // Fallback to simple parsing if library fails
+                    JsonNode root = mapper.readTree(json);
+                    JsonNode objects = root.get("objects");
+                    if (objects != null && objects.isArray()) {
+                        for (JsonNode node : objects) {
+                            if ("indicator".equals(node.path("type").asText())) {
+                                addPattern(domains, urls, processes, node.path("pattern").asText());
+                            }
+                        }
+                    }
+                }
+            } else {
+                JsonNode root = mapper.readTree(f);
+                JsonNode arr = root.get("indicators");
+                if (arr == null) continue;
+                for (JsonNode coll : arr) {
+                    addField(domains, coll, "domain-name:value");
+                    addField(domains, coll, "ipv4-addr:value");
+                    addField(urls, coll, "url:value");
+                    addField(processes, coll, "process:name");
+                }
             }
         }
         return new Indicators(domains.build(), urls.build(), processes.build());
+    }
+
+    private static void addPattern(Trie.TrieBuilder domains, Trie.TrieBuilder urls,
+                                   Trie.TrieBuilder processes, String pattern) {
+        if (pattern == null) return;
+        String p = pattern.trim();
+        if (p.startsWith("[") && p.endsWith("]")) {
+            p = p.substring(1, p.length() - 1);
+        }
+        String[] kv = p.split("=", 2);
+        if (kv.length != 2) return;
+        String key = kv[0].trim();
+        String value = kv[1].trim();
+        if (value.startsWith("'") && value.endsWith("'")) {
+            value = value.substring(1, value.length() - 1);
+        }
+        switch (key) {
+            case "domain-name:value", "ipv4-addr:value" -> domains.addKeyword(value.toLowerCase());
+            case "url:value" -> urls.addKeyword(value.toLowerCase());
+            case "process:name" -> processes.addKeyword(value.toLowerCase());
+            default -> {
+            }
+        }
     }
 
     private static void addField(Trie.TrieBuilder builder, JsonNode coll, String key) {
