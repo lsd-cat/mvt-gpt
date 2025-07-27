@@ -35,7 +35,7 @@ public class GetProp extends AndroidArtifact {
             @SuppressWarnings("unchecked")
             Map<String, String> map = (Map<String, String>) obj;
             String name = map.get("name");
-            detected.addAll(indicators.matchString(name, IndicatorType.PROCESS));
+            detected.addAll(indicators.matchString(name, IndicatorType.PROPERTY));
         }
     }
 
