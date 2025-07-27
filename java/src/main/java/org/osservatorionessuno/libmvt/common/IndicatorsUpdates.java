@@ -51,6 +51,13 @@ public class IndicatorsUpdates {
         }
     }
 
+    /**
+     * Return the folder where indicators are stored.
+     */
+    public Path getIndicatorsFolder() {
+        return indicatorsFolder;
+    }
+
     private Map<String, Object> getRemoteIndex() throws IOException, InterruptedException {
         String url = indexUrl != null ? indexUrl : String.format(githubRawUrl, "mvt-project", "mvt-indicators", "main", "indicators.yaml");
         if (url.startsWith("file://")) {
@@ -111,6 +118,16 @@ public class IndicatorsUpdates {
 
     private void setLatestUpdate() {
         try { Files.writeString(latestUpdatePath, Long.toString(Instant.now().getEpochSecond())); } catch (IOException ignored) {}
+    }
+
+    /**
+     * Download a single IOC file from a URL into the indicators folder.
+     * @param url the remote or local URL
+     * @return the path to the downloaded file or {@code null} on failure
+     */
+    public Path download(String url) throws IOException, InterruptedException {
+        String dl = downloadRemoteIoc(url);
+        return dl != null ? Path.of(dl) : null;
     }
 
     public void update() throws IOException, InterruptedException {

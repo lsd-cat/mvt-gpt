@@ -16,7 +16,9 @@ java {
 
 repositories {
     mavenCentral()
-    maven { url 'https://jitpack.io' }
+    maven {
+        url = 'https://jitpack.io'
+    }
 }
 
 dependencies {
@@ -27,6 +29,8 @@ dependencies {
     implementation 'org.yaml:snakeyaml:2.2'
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.17.+'
     implementation 'org.apache.commons:commons-compress:1.26.1'
+    compileOnly 'org.immutables:value-annotations:2.10.0'
+    compileOnly 'org.immutables:annotate:2.10.1'
 
     testImplementation 'org.junit.jupiter:junit-jupiter:5.10.+'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'

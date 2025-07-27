@@ -25,6 +25,7 @@ import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 
 /** Utilities to parse Android backup (.ab) files and extract SMS messages. */
+@SuppressWarnings("deprecation")
 public final class BackupParser {
     private BackupParser() {}
 
