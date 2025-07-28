@@ -1,4 +1,7 @@
-# libmvt-multiplatform
+# libmvt
+> [!CAUTION]
+> This library is a machine-generated implementation of the parsing and matching of Android artifacts performed by [mvt](https://mvt.re). It has not been fully reviewed, it is completely experimental, and it should not be used until manually checked and tested.
+
 
 ![Build](https://img.shields.io/badge/build-passing-brightgreen)
 ![Tests](https://img.shields.io/badge/tests-passing-brightgreen)
@@ -32,7 +35,7 @@ Indicators iocs = Indicators.loadFromDirectory(Path.of("/path/to/iocs").toFile()
 
 ## AndroidQF example
 Run all modules on a directory exported with
-[androidqf](https://mvt.re/):
+[androidqf](https://github.com/mvt-project/androidqf):
 ```java
 Path dir = Path.of("/path/to/androidqf");
 AndroidQFRunner runner = new AndroidQFRunner(dir);
