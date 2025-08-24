@@ -5,20 +5,21 @@ import org.junit.jupiter.api.Test;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TombstoneCrashesTest {
     private byte[] readBytes(String name) throws Exception {
-        Path path = Path.of("src", "test", "resources", name);
+        Path path = Paths.get("src", "test", "resources", name);
         return Files.readAllBytes(path);
     }
 
     @Test
     public void testParsing() throws Exception {
         TombstoneCrashes tc = new TombstoneCrashes();
-        String data = Files.readString(Path.of("src", "test", "resources", "android_data/tombstone_process.txt"));
+        String data = Files.readString(Paths.get("src", "test", "resources", "android_data/tombstone_process.txt"));
         tc.parse(data);
         assertEquals(1, tc.getResults().size());
         @SuppressWarnings("unchecked")

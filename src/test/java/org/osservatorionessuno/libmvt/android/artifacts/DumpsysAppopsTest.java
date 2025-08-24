@@ -5,6 +5,7 @@ import org.osservatorionessuno.libmvt.common.Indicators;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 
@@ -12,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class DumpsysAppopsTest {
     private String readResource(String name) throws Exception {
-        Path path = Path.of("src", "test", "resources", name);
+        Path path = Paths.get("src", "test", "resources", name);
         return Files.readString(path);
     }
 
@@ -48,7 +49,7 @@ public class DumpsysAppopsTest {
         DumpsysAppops da = new DumpsysAppops();
         String data = readResource("android_data/dumpsys_appops.txt");
         da.parse(data);
-        Indicators indicators = Indicators.loadFromDirectory(Path.of("src", "test", "resources", "iocs").toFile());
+        Indicators indicators = Indicators.loadFromDirectory(Paths.get("src", "test", "resources", "iocs").toFile());
         da.setIndicators(indicators);
         da.checkIndicators();
         assertTrue(da.getDetected().size() > 0);

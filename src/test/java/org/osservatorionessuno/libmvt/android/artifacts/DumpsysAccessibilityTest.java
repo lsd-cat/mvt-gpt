@@ -6,6 +6,7 @@ import org.osservatorionessuno.libmvt.common.IndicatorType;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -13,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class DumpsysAccessibilityTest {
 
     private String readResource(String name) throws Exception {
-        Path path = Path.of("src", "test", "resources", name);
+        Path path = Paths.get("src", "test", "resources", name);
         return Files.readString(path);
     }
 
@@ -48,7 +49,7 @@ public class DumpsysAccessibilityTest {
         da.parse(data);
 
         Path temp = Files.createTempDirectory("iocs");
-        Files.list(Path.of("src","test","resources","iocs"))
+        Files.list(Paths.get("src","test","resources","iocs"))
                 .forEach(p -> { try { Files.copy(p, temp.resolve(p.getFileName())); } catch (Exception ignored) {} });
         Files.writeString(temp.resolve("extra.json"), "{\"indicators\":[{\"app:id\":[\"com.sec.android.app.camera\"]}]}" );
         Indicators indicators = Indicators.loadFromDirectory(temp.toFile());

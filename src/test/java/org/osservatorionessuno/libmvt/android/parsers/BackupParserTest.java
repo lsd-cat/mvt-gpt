@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.util.List;
 import java.util.Map;
@@ -13,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class BackupParserTest {
     private byte[] readBytes(String name) throws IOException {
-        Path path = Path.of("src","test","resources",name);
+        Path path = Paths.get("src","test","resources",name);
         return Files.readAllBytes(path);
     }
 

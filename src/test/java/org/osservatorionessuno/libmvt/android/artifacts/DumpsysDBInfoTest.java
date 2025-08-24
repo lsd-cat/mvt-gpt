@@ -5,13 +5,14 @@ import org.osservatorionessuno.libmvt.common.Indicators;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class DumpsysDBInfoTest {
     private String readResource(String name) throws Exception {
-        Path path = Path.of("src", "test", "resources", name);
+        Path path = Paths.get("src", "test", "resources", name);
         return Files.readString(path);
     }
 
@@ -33,7 +34,7 @@ public class DumpsysDBInfoTest {
         DumpsysDBInfo dbi = new DumpsysDBInfo();
         String data = readResource("android_data/dumpsys_dbinfo.txt");
         dbi.parse(data);
-        Indicators ind = Indicators.loadFromDirectory(Path.of("src", "test", "resources", "iocs").toFile());
+        Indicators ind = Indicators.loadFromDirectory(Paths.get("src", "test", "resources", "iocs").toFile());
         dbi.setIndicators(ind);
         dbi.checkIndicators();
         assertEquals(0, dbi.getDetected().size());

@@ -30,14 +30,14 @@ updates.download("https://example.com/my_iocs.stix2");
 
 Alternatively load IOCs from an existing directory:
 ```java
-Indicators iocs = Indicators.loadFromDirectory(Path.of("/path/to/iocs").toFile());
+Indicators iocs = Indicators.loadFromDirectory(Paths.get("/path/to/iocs").toFile());
 ```
 
 ## AndroidQF example
 Run all modules on a directory exported with
 [androidqf](https://github.com/mvt-project/androidqf):
 ```java
-Path dir = Path.of("/path/to/androidqf");
+Path dir = Paths.get("/path/to/androidqf");
 AndroidQFRunner runner = new AndroidQFRunner(dir);
 runner.setIndicators(iocs);
 Map<String, Artifact> result = runner.runAll();

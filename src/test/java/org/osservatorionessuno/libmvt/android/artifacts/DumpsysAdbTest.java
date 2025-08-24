@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 
@@ -11,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class DumpsysAdbTest {
     private String readResource(String name) throws Exception {
-        Path path = Path.of("src", "test", "resources", name);
+        Path path = Paths.get("src", "test", "resources", name);
         return Files.readString(path);
     }
 

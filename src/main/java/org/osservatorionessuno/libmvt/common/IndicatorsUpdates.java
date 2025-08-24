@@ -10,13 +10,14 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Map;
 
 public class IndicatorsUpdates {
     private static final String DEFAULT_GITHUB_RAW = "https://raw.githubusercontent.com/%s/%s/%s/%s";
-    public static final Path MVT_DATA_FOLDER = Path.of(System.getProperty("user.home"), ".mvt");
+    public static final Path MVT_DATA_FOLDER = Paths.get(System.getProperty("user.home"), ".mvt");
 
     private final HttpClient client = HttpClient.newHttpClient();
     private final Path latestUpdatePath;
@@ -61,7 +62,7 @@ public class IndicatorsUpdates {
     private Map<String, Object> getRemoteIndex() throws IOException, InterruptedException {
         String url = indexUrl != null ? indexUrl : String.format(githubRawUrl, "mvt-project", "mvt-indicators", "main", "indicators.yaml");
         if (url.startsWith("file://")) {
-            Path p = Path.of(URI.create(url));
+            Path p = Paths.get(URI.create(url));
             ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
             @SuppressWarnings("unchecked")
             Map<String,Object> res = (Map<String,Object>) mapper.readValue(p.toFile(), Map.class);
@@ -84,7 +85,7 @@ public class IndicatorsUpdates {
         String fileName = url.replaceFirst("^https?://", "").replaceAll("[\\/]", "_");
         Path dest = indicatorsDir.resolve(fileName);
         if (url.startsWith("file://")) {
-            Path p = Path.of(URI.create(url));
+            Path p = Paths.get(URI.create(url));
             Files.copy(p, dest, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
             return dest.toString();
         }
@@ -127,7 +128,7 @@ public class IndicatorsUpdates {
      */
     public Path download(String url) throws IOException, InterruptedException {
         String dl = downloadRemoteIoc(url);
-        return dl != null ? Path.of(dl) : null;
+        return dl != null ? Paths.get(dl) : null;
     }
 
     public void update() throws IOException, InterruptedException {

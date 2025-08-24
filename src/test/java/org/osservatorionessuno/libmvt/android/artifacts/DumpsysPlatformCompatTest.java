@@ -5,13 +5,14 @@ import org.osservatorionessuno.libmvt.common.Indicators;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class DumpsysPlatformCompatTest {
     private String readResource(String name) throws Exception {
-        Path path = Path.of("src", "test", "resources", name);
+        Path path = Paths.get("src", "test", "resources", name);
         return Files.readString(path);
     }
 
@@ -31,7 +32,7 @@ public class DumpsysPlatformCompatTest {
         DumpsysPlatformCompat pc = new DumpsysPlatformCompat();
         String data = readResource("android_data/dumpsys_platform_compat.txt");
         pc.parse(data);
-        Indicators ind = Indicators.loadFromDirectory(Path.of("src", "test", "resources", "iocs").toFile());
+        Indicators ind = Indicators.loadFromDirectory(Paths.get("src", "test", "resources", "iocs").toFile());
         pc.setIndicators(ind);
         pc.checkIndicators();
         assertEquals(0, pc.getDetected().size());

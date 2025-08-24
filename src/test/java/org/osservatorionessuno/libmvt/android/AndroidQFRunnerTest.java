@@ -5,6 +5,7 @@ import org.osservatorionessuno.libmvt.common.Artifact;
 import org.osservatorionessuno.libmvt.common.Indicators;
 
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -12,8 +13,8 @@ import static org.junit.jupiter.api.Assertions.*;
 public class AndroidQFRunnerTest {
     @Test
     public void testRunAllModules() throws Exception {
-        Path dir = Path.of("src", "test", "resources", "androidqf");
-        Indicators ind = Indicators.loadFromDirectory(Path.of("src","test","resources","iocs").toFile());
+        Path dir = Paths.get("src", "test", "resources", "androidqf");
+        Indicators ind = Indicators.loadFromDirectory(Paths.get("src","test","resources","iocs").toFile());
         AndroidQFRunner runner = new AndroidQFRunner(dir);
         runner.setIndicators(ind);
         Map<String, Artifact> res = runner.runAll();
@@ -26,7 +27,7 @@ public class AndroidQFRunnerTest {
 
     @Test
     public void testRunSingleModule() throws Exception {
-        Path dir = Path.of("src", "test", "resources", "androidqf");
+        Path dir = Paths.get("src", "test", "resources", "androidqf");
         AndroidQFRunner runner = new AndroidQFRunner(dir);
         Artifact art = runner.runModule("getprop");
         assertEquals(10, art.getResults().size());

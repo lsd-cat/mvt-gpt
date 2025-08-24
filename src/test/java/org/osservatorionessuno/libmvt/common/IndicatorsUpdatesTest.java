@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -11,7 +12,7 @@ public class IndicatorsUpdatesTest {
     @Test
     public void testUpdateLocal() throws Exception {
         Path temp = Files.createTempDirectory("mvt");
-        Path stix = Path.of("src","test","resources","stix2","cytrox.stix2");
+        Path stix = Paths.get("src","test","resources","stix2","cytrox.stix2");
         String index = "indicators:\n" +
                 "  - name: local\n" +
                 "    type: download\n" +
